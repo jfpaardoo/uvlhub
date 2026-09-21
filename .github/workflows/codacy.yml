@@ -11,6 +11,9 @@ on:
 jobs:
   codacy:
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python-version: ['3.13', '3.14']
     services:
       mariadb:
         image: mariadb:12.0.2
@@ -41,6 +44,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -e ./rosemary
+    
+    - name: Check outdated dependencies
+      run: |
+        pip list --outdated
+
+    - name: Run pip-audit
+      run: |
+        pip install pip-audit
+        pip-audit
 
     - name: Run tests with coverage
       run: |

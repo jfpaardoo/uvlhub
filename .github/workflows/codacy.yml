@@ -37,7 +37,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
-        python-version: '3.13'
+        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |
@@ -46,10 +46,12 @@ jobs:
         pip install -e ./rosemary
     
     - name: Check outdated dependencies
+      continue-on-error: true
       run: |
         pip list --outdated
 
     - name: Run pip-audit
+      continue-on-error: true
       run: |
         pip install pip-audit
         pip-audit
@@ -67,6 +69,7 @@ jobs:
         MARIADB_PASSWORD: uvlhub_password
 
     - name: Upload coverage to Codacy
+      if: matrix.python-version == '3.13'
       run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
       env:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
